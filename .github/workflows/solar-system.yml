@@ -1,0 +1,72 @@
+name: Solar System Workflow
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+            - 'feature/*'
+
+env:
+  MONGO_URI: 'mongodb+srv://${{ vars.MONGO_USERNAME }}:${{ secrets.MONGO_PASSWORD }}@cluster0.0dxega1.mongodb.net/planets?appName=Cluster0'
+  MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+  MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
+jobs:
+    unit-testing:
+        name: Unit Testing
+        strategy:
+          matrix:
+            nodejs-version: [18,20,22]
+            operating-system: [ubuntu-latest, macos-latest]
+            exclude:
+              - nodejs-version: 18
+                operating-system: macos-latest
+        runs-on: ${{ matrix.operating-system }}
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup node js version ${{ matrix.nodejs-version }}
+              uses: actions/setup-node@v6
+              with:
+                node-version: ${{ matrix.nodejs-version }}
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Unit Testing
+              run: npm test
+
+            - name: Archive test results
+              uses: actions/upload-artifact@v4
+              with:
+                name: Mocha test result
+                path: test-results.xml
+
+
+    code-coverage:
+      name: code coverage
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+        
+        - name: Setup node js version 20
+          uses: actions/setup-node@v6
+          with:
+            node-version: 20
+          
+        - name: Install dependencies
+          run: npm install
+        
+        - name: Check code coverate
+          run: npm run coverage
+
+        - name: Archive coverage result
+          uses: actions/upload-artifact@v4
+          with:
+            name: Code coverage result
+            path: coverage
+            retention-days: 5
+            
