@@ -8,7 +8,7 @@ on:
             - 'feature/*'
 
 env:
-  MONGO_URI: 'mongodb+srv://${{ vars.MONGO_USERNAME }}:${{ secrets.MONGO_PASSWORD }}@cluster0.0dxega1.mongodb.net/?appName=Cluster0'
+  MONGO_URI: 'mongodb+srv://${{ vars.MONGO_USERNAME }}:${{ secrets.MONGO_PASSWORD }}@cluster0.0dxega1.mongodb.net/planets?appName=Cluster0'
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
@@ -19,7 +19,7 @@ jobs:
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
-            
+
             - name: Setup node js version 18
               uses: actions/setup-node@v6
               with:
